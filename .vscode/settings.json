@@ -1,0 +1,7 @@
+{
+    "java.project.sourcePaths": [
+        "core/src/main/java",
+         "core/build/generated-src/antlr/main"
+    ],
+    "java.configuration.updateBuildConfiguration": "disabled"
+}

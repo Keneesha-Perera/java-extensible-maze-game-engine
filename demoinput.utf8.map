@@ -1,0 +1,80 @@
+size (16 ,19)
+start (11,5)
+goal (1,14)
+item "white helmet" {
+  at (3,1), (5,1), (9,13), (10,9), (6,17), (9,12)
+  message "ZtUZI"
+}
+item "Map Fun" {
+  at (0,1)
+  message "This map reveals everything!"
+}
+
+
+obstacle {
+  at (10,13), (4,10), (10,18), (10,5), (13,11), (9,3), (15,4), (2,9), (12,8), (15,2)
+  requires "white helmet", "cheap helmet"
+}
+
+
+
+obstacle {
+  at (7,17), (10,4), (11,10), (9,17), (10,16), (12,0), (11,14), (9,16), (8,1), (2,12), (3,14), (0,16)
+  requires "cheap helmet", "white helmet"
+}
+
+
+
+obstacle {
+  at (8,15), (14,18), (12,15), (3,15), (9,14), (1,17), (2,15), (10,14), (6,5), (3,4)
+  requires "white helmet"
+}
+
+obstacle {
+  at (15,7), (11,9), (12,14), (3,3), (0,7), (7,6), (15,13), (6,11), (5,3), (11,13), (7,10), (14,0), (7,5), (1,12), (12,17), (9,2)
+  requires "cheap helmet"
+}
+
+obstacle {
+  at (12,11), (8,6), (5,14), (10,10), (1,5), (15,11), (5,18), (1,8), (2,2), (10,8), (11,16)
+  requires "cheap helmet"
+}
+
+item "cheap helmet" {
+  at (12,2), (6,1), (11,2), (3,5)
+  message "nZanHeG"
+}
+
+plugin edu.curtin.gameplugins.Teleport
+plugin edu.curtin.gameplugins.Reveal
+plugin edu.curtin.gameplugins.Prize
+
+script !{
+import time
+
+last_move_time = [time.time()]
+
+def execute(game):
+
+    def on_player_move(row, col):
+        current_time = time.time()
+        elapsed = current_time - last_move_time[0]
+
+        if elapsed > 5:
+            directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+            for dr, dc in directions:
+                r = row + dr
+                c = col + dc
+
+                if 0 <= r < game.getRows() and 0 <= c < game.getCols():
+                    if not game.hasObstacle(r, c) and not game.hasGoal(r, c) and not game.hasInventory(r,c):
+                        game.addObstacle(r, c, ["Penalty Blocker"])
+                        game.setVisible(r, c, True)
+                        game.addPostMapMessage("Penalty obstacle added at row " + str(r) + ", col " + str(c))
+                        break
+
+        last_move_time[0] = current_time
+
+    game.registerPlayerMoveCallback(on_player_move)
+
+}

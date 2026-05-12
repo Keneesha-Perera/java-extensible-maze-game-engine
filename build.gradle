@@ -1,0 +1,44 @@
+// Root build.gradle
+
+// Apply common settings to all subprojects
+subprojects {
+    // Use Java plugin for all subprojects
+    apply plugin: 'java'
+    // Apply PMD plugin to all subprojects
+    apply plugin: 'pmd'
+
+    pmd {
+    toolVersion = '7.15.0'  
+    consoleOutput = true     // show warnings in terminal
+    ruleSets = []            // leave empty to use custom rules
+    ruleSetFiles = files("${rootProject.projectDir}/saed-pmd-rules.xml")
+    }
+
+    // Set Java version
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    // Repositories for dependencies
+    repositories {
+        mavenCentral()
+    }
+
+    // Common dependencies can go here if needed
+    dependencies {
+        // For example, if you need JUnit for all subprojects:
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    }
+
+    // Common compile options
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}
+
+// Optional: configure allprojects (including root project) if needed
+allprojects {
+    group = 'edu.curtin'
+    version = '1.0-SNAPSHOT'
+}

@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'antlr'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':api')
+    implementation project(':teleport-plugin')
+    implementation project(':reveal-plugin')
+    implementation project(':prize-plugin')
+    // ANTLR tool for generating parser/visitor
+    antlr "org.antlr:antlr4:4.13.1"
+
+    // Runtime dependency
+    implementation "org.antlr:antlr4-runtime:4.13.1"
+    implementation 'org.python:jython-standalone:2.7.3'
+
+    // Optional testing
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation project(':api')
+}
+
+// Configure ANTLR code generation
+tasks.generateGrammarSource {
+    arguments += ['-visitor', '-long-messages']
+}
+
+// Include generated sources in compilation
+sourceSets {
+    main {
+        java {
+            srcDirs += "$buildDir/generated-src/antlr/main"
+        }
+    }
+}
+
+// Ensure Java compilation runs after ANTLR generation
+tasks.withType(JavaCompile) {
+    dependsOn tasks.generateGrammarSource
+    options.encoding = "UTF-8"
+}
+
+// Application main class
+application {
+    mainClass = 'edu.curtin.game.Game'
+}
+
+// Optional: clean generated ANTLR files with project clean
+tasks.clean {
+    delete "$buildDir/generated-src/antlr/main"
+}
+
+tasks.named('run') {
+    standardInput = System.in
+}
+
